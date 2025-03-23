@@ -137,7 +137,7 @@ public:
 	ChildReader(string n, int a)
 		: Reader(n, a) {}
 
-	void display() const override {
+	void display() const override final {
 		cout << "ChildReader[Name: " << name << ", Age: " << age << "]" << endl;
 	}
 };
@@ -147,7 +147,7 @@ public:
 	AdultReader(string n, int a)
 		: Reader(n, a) {}
 
-	void display() const override {
+	void display() const override final {
 		cout << "AdultReader[Name: " << name << ", Age: " << age << "]" << endl;
 	}
 };
