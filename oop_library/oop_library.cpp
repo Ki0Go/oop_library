@@ -4,6 +4,10 @@
 
 using namespace std;
 
+void printReader(const Reader& r) {
+    r.display();
+}
+
 int main() {
     Library library1("City Library");
     Library library2("University Library");
@@ -42,6 +46,8 @@ int main() {
  
     reader1->display();
     reader2->display();
+    printReader(*reader1);
+    printReader(*reader2);
 
     cout << "============================================" << endl;
 
