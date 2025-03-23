@@ -7,7 +7,13 @@
 
 using namespace std;
 
-class Book {
+class Printable {
+public:
+	virtual void print() const = 0;
+	virtual ~Printable() = default;
+};
+
+class Book : public Printable {
 private:
 	string title;
 	string author;
@@ -82,6 +88,9 @@ public:
 		}
 		is.ignore();
 		return is;
+	}
+	void print() const override {
+		cout << "Book[Title: " << title << ", Author: " << author << ", Year: " << year << "]" << endl;
 	}
 };
 

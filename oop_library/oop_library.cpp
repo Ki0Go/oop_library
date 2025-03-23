@@ -12,8 +12,9 @@ int main() {
     Library library1("City Library");
     Library library2("University Library");
 
-    Book book1;
-    cin >> book1;
+    /*Book book1;
+    cin >> book1;*/
+    Book book1("book_name1", "book1_author", 1234);
     Book book2("book_name2", "book2_author", 1960);
     Book book3("book_name3", "book3_author", 1851);
     Book book4("book_name4", "book4_author", 1925);
@@ -24,6 +25,7 @@ int main() {
     cout << book3 << endl;
     cout << book4 << endl;
     cout << book5 << endl;
+    book1.print();
 
     cout << "============================================" << endl;
 
@@ -46,8 +48,8 @@ int main() {
  
     reader1->display();
     reader2->display();
-    printReader(*reader1);
-    printReader(*reader2);
+    /*printReader(*reader1);
+    printReader(*reader2);*/
 
     cout << "============================================" << endl;
 
