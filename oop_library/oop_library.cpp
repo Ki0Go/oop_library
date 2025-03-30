@@ -1,81 +1,188 @@
-#include "library.h"
+#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <memory>
+#include <Windows.h>
+#include <ctime>
+#include <limits>
+#include "library.h"
+
+#undef max
+#undef min
 
 using namespace std;
 
-void printReader(const Reader& r) {
-    r.display();
-}
-
 int main() {
-    Library library1("City Library");
-    Library library2("University Library");
+    SetConsoleCP(1251);
+    SetConsoleOutputCP(1251);
 
-    /*Book book1;
-    cin >> book1;*/
-    Book book1("book_name1", "book1_author", 1234);
-    Book book2("book_name2", "book2_author", 1960);
-    Book book3("book_name3", "book3_author", 1851);
-    Book book4("book_name4", "book4_author", 1925);
-    Book book5("book_name5", "book5_author", 1813);
+    Library cityLibrary("City Library");
+    Library universityLibrary("University Library");
 
-    cout << book1 << endl;
-    cout << book2 << endl;
-    cout << book3 << endl;
-    cout << book4 << endl;
-    cout << book5 << endl;
-    book1.print();
+    try {
+        cityLibrary.loadFromFile();
+        universityLibrary.loadFromFile();
+    }
+    catch (const exception& e) {
+        cout << "Помилка при завантаженні файлів: " << e.what() << endl;
+    }
 
-    cout << "============================================" << endl;
+    string currentUser;
+    cout << "Введіть ваше прізвище та ініціали: ";
+    getline(cin, currentUser);
 
-    library1.addBook(move(book1));
-    library1.addBook(move(book2));
-    library2.addBook(move(book3));
-    library2.addBook(move(book4));
-    library2.addBook(move(book5));
+    int mainChoice;
+    string adminPassword = "admin", inputPassword;
 
+    while (true) {
+        cout << "\n=== Головне меню ===\n";
+        cout << "1. Адміністратор\n";
+        cout << "2. Користувач\n";
+        cout << "3. Вихід\n";
+        cout << "Ваш вибір: ";
+        cin >> mainChoice;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-    cout << "============================================" << endl;
+        switch (mainChoice) {
+        case 1: {
+            cout << "Введіть пароль (0 для виходу): ";
+            getline(cin, inputPassword);
+            if (inputPassword == "0" || inputPassword != adminPassword) {
+                cout << "Повернення назад.\n";
+                break;
+            }
 
-    library1.display();
-    library2.display();
+            int adminChoice, libChoice;
+            Library* selectedLib;
 
-    cout << "============================================" << endl;
+            cout << "Виберіть бібліотеку:\n1. City Library\n2. University Library\nВаш вибір: ";
+            cin >> libChoice;
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            selectedLib = (libChoice == 1) ? &cityLibrary : &universityLibrary;
 
-    auto reader1 = ReaderFactory::createReader("Alice", 15);
-    auto reader2 = ReaderFactory::createReader("Bob", 25);
- 
-    reader1->display();
-    reader2->display();
-    /*printReader(*reader1);
-    printReader(*reader2);*/
+            do {
+                cout << "\n--- Адміністратор (" << selectedLib->getName() << ") ---\n"
+                    << "1. Додати книгу\n"
+                    << "2. Видалити книгу\n"
+                    << "3. Взяти книгу\n"
+                    << "4. Повернути книгу\n"
+                    << "5. Переглянути список книг\n"
+                    << "6. Переглянути видані книги\n"
+                    << "7. Назад\n"
+                    << "Ваш вибір: ";
 
-    cout << "============================================" << endl;
+                cin >> adminChoice;
+                cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-    library1.issueBook("book_name1", reader1->getName());
-    library1.issueBook("book_name2", reader2->getName());
-    library2.issueBook("book_name3", reader1->getName());
-    library2.issueBook("book_name4", reader2->getName());
-    library2.issueBook("book_name1", reader1->getName());
+                string title;
+                switch (adminChoice) {
+                case 1: {
+                    Book b;
+                    cin >> b;
+                    try {
+                        selectedLib->addBook(b);
+                    }
+                    catch (const exception& e) {
+                        cout << "Помилка: " << e.what() << endl;
+                    }
 
-    cout << "============================================" << endl;
+                    break;
+                }
+                case 2:
+                    cout << "Назва книги: ";
+                    getline(cin, title);
+                    selectedLib->removeBook(title);
+                    break;
+                case 3:
+                    cout << "Назва книги: ";
+                    getline(cin, title);
+                    try {
+                        selectedLib->issueBook(title, currentUser);
+                    }
+                    catch (const exception& e) {
+                        cout << "Помилка: " << e.what() << endl;
+                    }
 
-    library1.displayIssuedBooks();
+                    break;
+                case 4:
+                    cout << "Назва книги: ";
+                    getline(cin, title);
+                    try {
+                        selectedLib->returnBook(title, currentUser);
+                    }
+                    catch (const exception& e) {
+                        cout << "Помилка: " << e.what() << endl;
+                    }
 
-    cout << "============================================" << endl;
+                    break;
+                case 5:
+                    selectedLib->displayBooks();
+                    break;
+                case 6:
+                    selectedLib->displayIssuedBooks();
+                    break;
+                }
+            } while (adminChoice != 7);
+            break;
+        }
 
-    library1.returnBook("book_name1");
-    library1.returnBook("book_name2");
-    library2.returnBook("book_name3");
-    library2.returnBook("book_name4");
-    library2.returnBook("book_name1");
+        case 2: {
+            int userChoice, libChoice;
+            Library* selectedLib;
 
-    cout << "============================================" << endl;
+            cout << "Виберіть бібліотеку:\n1. City Library\n2. University Library\nВаш вибір: ";
+            cin >> libChoice;
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            selectedLib = (libChoice == 1) ? &cityLibrary : &universityLibrary;
 
-    library1.display();
-    library2.display();
+            do {
+                cout << "\n--- Користувач (" << selectedLib->getName() << ") ---\n"
+                    << "1. Взяти книгу\n"
+                    << "2. Повернути книгу\n"
+                    << "3. Переглянути список книг\n"
+                    << "4. Назад\n"
+                    << "Ваш вибір: ";
+                cin >> userChoice;
+                cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-    cout << "============================================" << endl;
-    return 0;
+                string title;
+                switch (userChoice) {
+                case 1:
+                    cout << "Назва книги: ";
+                    getline(cin, title);
+                    try {
+                        selectedLib->issueBook(title, currentUser);
+                    }
+                    catch (const exception& e) {
+                        cout << "Помилка: " << e.what() << endl;
+                    }
+
+                    break;
+                case 2:
+                    cout << "Назва книги: ";
+                    getline(cin, title);
+                    try {
+                        selectedLib->returnBook(title, currentUser);
+                    }
+                    catch (const exception& e) {
+                        cout << "Помилка: " << e.what() << endl;
+                    }
+
+                    break;
+                case 3:
+                    selectedLib->displayBooks();
+                    break;
+                }
+            } while (userChoice != 4);
+            break;
+        }
+        case 3:
+            cityLibrary.saveToFile();
+            universityLibrary.saveToFile();
+            cout << "До побачення!\n";
+            return 0;
+        }
+    }
+
 }
