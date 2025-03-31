@@ -33,7 +33,7 @@ int main() {
     getline(cin, currentUser);
 
     int mainChoice;
-    string adminPassword = "admin", inputPassword;
+    string adminPassword = "0", inputPassword;
 
     while (true) {
         cout << "\n=== Головне меню ===\n";
@@ -46,10 +46,10 @@ int main() {
 
         switch (mainChoice) {
         case 1: {
-            cout << "Введіть пароль (0 для виходу): ";
+            cout << "Введіть пароль: ";
             getline(cin, inputPassword);
-            if (inputPassword == "0" || inputPassword != adminPassword) {
-                cout << "Повернення назад.\n";
+            if (inputPassword != adminPassword) {
+                cout << "Неправильний пароль.\n";
                 break;
             }
 
@@ -86,7 +86,6 @@ int main() {
                     catch (const exception& e) {
                         cout << "Помилка: " << e.what() << endl;
                     }
-
                     break;
                 }
                 case 2:
@@ -103,7 +102,6 @@ int main() {
                     catch (const exception& e) {
                         cout << "Помилка: " << e.what() << endl;
                     }
-
                     break;
                 case 4:
                     cout << "Назва книги: ";
@@ -114,7 +112,6 @@ int main() {
                     catch (const exception& e) {
                         cout << "Помилка: " << e.what() << endl;
                     }
-
                     break;
                 case 5:
                     selectedLib->displayBooks();
@@ -126,7 +123,6 @@ int main() {
             } while (adminChoice != 7);
             break;
         }
-
         case 2: {
             int userChoice, libChoice;
             Library* selectedLib;
@@ -157,7 +153,6 @@ int main() {
                     catch (const exception& e) {
                         cout << "Помилка: " << e.what() << endl;
                     }
-
                     break;
                 case 2:
                     cout << "Назва книги: ";
@@ -168,7 +163,6 @@ int main() {
                     catch (const exception& e) {
                         cout << "Помилка: " << e.what() << endl;
                     }
-
                     break;
                 case 3:
                     selectedLib->displayBooks();
@@ -180,9 +174,9 @@ int main() {
         case 3:
             cityLibrary.saveToFile();
             universityLibrary.saveToFile();
+
             cout << "До побачення!\n";
             return 0;
         }
     }
-
 }
